@@ -64,7 +64,7 @@ function csurf(options) {
 
   return function wrapper(options = { ignoreMethods: ["GET", "HEAD", "OPTIONS"] }) {
     const opt = options || {};
-    const ignored = opts.ignoreMethods || ignoreMethods;
+    const ignored = opt.ignoreMethods || ignoreMethods;
     // generate lookup
     var ignoreMethod = getIgnoredMethods(ignored);
     return function csrf(req, res, next) {
