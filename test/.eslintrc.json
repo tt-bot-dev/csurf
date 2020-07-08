@@ -1,0 +1,6 @@
+{
+    "extends": "@tt-bot-dev",
+    "env": {
+        "mocha": true
+    }
+}

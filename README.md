@@ -1,11 +1,11 @@
 # csurf
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
+[![NPM Version][npm-version-image]][npm-url]
+[![NPM Downloads][npm-downloads-image]][node-url]
 [![Build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
 
-Node.js [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection middleware.
+Node.js [CSRF][wikipedia-csrf] protection middleware.
 
 Requires either a session middleware or [cookie-parser](https://www.npmjs.com/package/cookie-parser) to be initialized first.
 
@@ -52,7 +52,9 @@ any of the following keys:
 ##### cookie
 
 Determines if the token secret for the user should be stored in a cookie
-or in `req.session`. Defaults to `false`.
+or in `req.session`. Storing the token secret in a cookie implements
+the [double submit cookie pattern][owsap-csrf-double-submit].
+Defaults to `false`.
 
 When set to `true` (or an object of options for the cookie), then the module
 changes behavior and no longer uses `req.session`. This means you _are no
@@ -68,8 +70,18 @@ following keys:
   - `key` - the name of the cookie to use to store the token secret
     (defaults to `'_csrf'`).
   - `path` - the path of the cookie (defaults to `'/'`).
-  - any other [res.cookie](http://expressjs.com/4x/api.html#res.cookie)
-    option can be set.
+  - `signed` - indicates if the cookie should be signed (defaults to `false`).
+  - `secure` - marks the cookie to be used with HTTPS only (defaults to
+    `false`).
+  - `maxAge` - the number of seconds after which the cookie will expire
+    (defaults to session length).
+  - `httpOnly` - flags the cookie to be accessible only by the web server
+    (defaults to `false`).
+  - `sameSite` - sets the same site policy for the cookie(defaults to
+    `false`). This can be set to `'strict'`, `'lax'`, `'none'`, or `true`
+    (which maps to `'strict'`).
+  - `domain` - sets the domain the cookie is valid on(defaults to current
+    domain).
 
 ##### ignoreMethods
 
@@ -191,6 +203,28 @@ fetch('/process', {
 })
 ```
 
+#### Single Page Application (SPA)
+
+Many SPA frameworks like Angular have CSRF support built in automatically.
+Typically they will reflect the value from a specific cookie, like
+`XSRF-TOKEN` (which is the case for Angular).
+
+To take advantage of this, set the value from `req.csrfToken()` in the cookie
+used by the SPA framework. This is only necessary to do on the route that
+renders the page (where `res.render` or `res.sendFile` is called in Express,
+for example).
+
+The following is an example for Express of a typical SPA response:
+
+<!-- eslint-disable no-undef -->
+
+```js
+app.all('*', function (req, res) {
+  res.cookie('XSRF-TOKEN', req.csrfToken())
+  res.render('index')
+})
+```
+
 ### Ignoring Routes
 
 **Note** CSRF checks should only be disabled for requests that you expect to
@@ -269,15 +303,24 @@ app.use(function (err, req, res, next) {
 })
 ```
 
+## References
+
+- [Cross-side request forgery on Wikipedia][wikipedia-csrf]
+- [OWASP Cross-Site Request Forgery Prevention Cheat Sheet][owsap-csrf]
+
+[owsap-csrf]: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+[owsap-csrf-double-submit]: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#double-submit-cookie
+[wikipedia-csrf]: https://en.wikipedia.org/wiki/Cross-site_request_forgery
+
 ## License
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/csurf.svg
-[npm-url]: https://npmjs.org/package/csurf
-[travis-image]: https://img.shields.io/travis/expressjs/csurf/master.svg
-[travis-url]: https://travis-ci.org/expressjs/csurf
-[coveralls-image]: https://img.shields.io/coveralls/expressjs/csurf/master.svg
+[coveralls-image]: https://badgen.net/coveralls/c/github/expressjs/csurf/master
 [coveralls-url]: https://coveralls.io/r/expressjs/csurf?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/csurf.svg
-[downloads-url]: https://npmjs.org/package/csurf
+[node-url]: https://nodejs.org/en/download
+[npm-downloads-image]: https://badgen.net/npm/dm/csurf
+[npm-url]: https://npmjs.org/package/csurf
+[npm-version-image]: https://badgen.net/npm/v/csurf
+[travis-image]: https://badgen.net/travis/expressjs/csurf/master
+[travis-url]: https://travis-ci.org/expressjs/csurf

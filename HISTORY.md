@@ -4,17 +4,30 @@ unversioned: tt-bot-dev changes
 
 unreleased
 ==========
+1.11.0 / 2020-01-18
+===================
 
-  * deps: csrf@~3.0.6
+  * deps: cookie@0.4.0
+    - Add `SameSite=None` support
+  * deps: http-errors@~1.7.3
+    - deps: inherits@2.0.4
+
+1.10.0 / 2019-04-22
+===================
+
+  * deps: csrf@3.1.0
     - Remove `base64-url` dependency
-    - deps: uid-safe@2.1.4
-  * deps: http-errors@~1.6.2
+    - deps: tsscmp@1.0.6
+    - deps: uid-safe@2.1.5
+  * deps: http-errors@~1.7.2
     - Make `message` property enumerable for `HttpError`s
-    - deps: depd@1.1.1
+    - Set constructor name when possible
+    - deps: depd@~1.1.2
     - deps: inherits@2.0.3
-    - deps: setprototypeof@1.0.3
-    - deps: statuses@'>= 1.3.1 < 2'
+    - deps: setprototypeof@1.1.1
+    - deps: statuses@'>= 1.5.0 < 2'
   * perf: remove argument reassignment
+  * perf: use plain object for internal cookie options
 
 1.9.0 / 2016-05-27
 ==================
